@@ -104,9 +104,19 @@
             event.preventDefault();
 
             const newPassword = document.getElementById('new-password').value;
-            const resetToken = resetTokenInput.value;
+            const confirmPassword = document.getElementById('confirm-password').value;
 
-            const { error } = await supabase.auth.updateUser(resetToken, { password: newPassword });
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            const resetToken = resetTokenInput.value;
+            try {
+            const { error } = await supabase.auth.updateUser({
+                access_token: resetToken,
+                password: newPassword,
+            });
 
             if (error) {
                 console.error('Error resetting password:', error.message);
@@ -115,9 +125,14 @@
                 alert('Password has been reset successfully!');
                 form.style.display = 'none'
                 document.getElementById('reset-success').style.display = "block"
-                
+
             }
+          } catch (error) {
+        console.error('Unexpected error:', error);
+        alert('Unexpected error: ' + error.message);
+    }
         });
+                
     </script>
 </body>
 </html>
